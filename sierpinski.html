@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Sierpinski triangle in Javascript</title>
+<style type="text/css">
+input {width:40px}
+</style>
+<script type="text/javascript">
+var col,num;
+//var log='';
+var w=300;
+var h=300;
+var canvas, ctx;
+var x,y;
+var index=0;
+var loopcount=200;
+var totalloops;
+
+function draw()
+{
+	var nextfillstyle = '#000000';
+	var next2fillstyle = '#000000';
+	var next3fillstyle = '#000000';
+	for(var loop=0;loop<loopcount;loop++)
+	{
+		var N = Math.random();
+		if(N<=1/3) { x *= .5; y *= .5; next3fillstyle = '#00ff00'; };
+		if((N>1/3) && (N<=2/3)) { x = .5 * (.5 + x); y = .5 * (1 + y); next3fillstyle = '#ff0000';};
+		if(N>2/3) { x = .5 * (1 + x); y *= .5; next3fillstyle = '#0000ff'; };
+		if(ctx.fillStyle != '#000000') ctx.fillRect(x * w, (h - y * h), 1, 1);	
+		ctx.fillStyle = nextfillstyle;
+		nextfillstyle = next2fillstyle;
+		next2fillstyle = next3fillstyle;
+	}	
+	document.getElementById('label').innerHTML = index.toString();
+	if (index<totalloops) { index += loopcount; setTimeout('draw()', 0) }
+	ctx.stroke();
+}
+
+function init()
+{
+if(navigator.appVersion.match(/MSIE (\d\.\d)/)) return;
+initplot();
+document.getElementById('W').value = w.toString(); 
+document.getElementById('H').value = h.toString(); 
+go();
+}
+
+function initplot()
+{
+var plotwindow = document.getElementById('plot')
+plotwindow.width=w;
+plotwindow.height=h;
+//	generate context
+canvas = document.getElementById('plot');
+ctx = canvas.getContext('2d');
+// clear drawing
+ctx.fillStyle = '#ffffff';
+ctx.fillRect(0, 0, w, h);
+ctx.stroke();
+ctx.fillStyle = '#000000';
+}
+
+function go()
+{
+// width & height
+var waarde = parseFloat(document.getElementById('W').value);
+if(isNaN(waarde)) { alert('invalid entry for width:' + waarde); return;}
+if(waarde<0) { alert('invalid value for width:' + waarde +'\n width must be positive'); return;}
+w = waarde;
+var waarde = parseFloat(document.getElementById('H').value);
+if(isNaN(waarde)) { alert('invalid entry for height:' + waarde); return;}
+if(waarde<0) { alert('invalid value for height:' + waarde +'\n height must be positive'); return;}
+h = waarde;
+initplot();
+// start cycling
+index=0;
+x = Math.random();
+y = Math.random();
+totalloops = w * h / 2;
+handle = setTimeout('draw()',0);
+}
+</script>
+</head>
+<body id="container" onload="init()">
+<script type="text/javascript">
+if(parent==self) document.writeln('The results and other information are believed to be accurate,	but the author cannot take any responsibility for possible damage caused by mistakes or inaccuracies of the code.<h3 style="padding-left:20px">Sierpinski triangle in Javascript</h3>');
+</script>
+<canvas id="plot" name="plot"><br><br><br>This application only works with Browsers which support the canvas tag.<br><br><br><br><br><br><br></canvas>
+<br>
+<table>
+<tr>
+	<td colspan="2">This application draws the Sierpinski triangle,<br>
+	according an example program from the TI-83 plus calculator manual.<br>
+	This algoritm is converted to javascript making use of the html canvas tag.
+	</td>
+</tr>
+<tr>
+<td>Loop: <span id="label"></span></td>
+</tr>
+<tr>
+	<td>Width in pixels: <input type="text" id="W"></input></td>
+	<td>Height in pixels: <input type="text" id="H"></input></td>
+</tr>
+<tr>
+	<td><button type="button" onclick="go()">Draw now</button></td>
+</tr>
+</table>
+</body>
+</html>

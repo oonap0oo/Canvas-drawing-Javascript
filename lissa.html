@@ -1,0 +1,172 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Lissajou figures in Javascript</title>
+<style type="text/css">
+input {width:40px}
+</style>
+<script type="text/javascript">
+var col,num;
+//var log='';
+var w=300;
+var h=300;
+var fx=1000;
+var fy=1500;
+var phase=0;
+var T;
+var N;
+var NOneP = 50;
+var handle;
+var canvas, ctx;
+var xold,yold;
+
+function draw()
+{
+ctx.strokeStyle = 'black';
+ctx.lineWidth=1;
+ctx.beginPath();
+var first = true;
+var phase_rad = phase * Math.PI / 180;
+for(var time=-T / N; time <= T; time += T / N)
+{
+	var x = 0.5 * (w - 2) * (1 + Math.sin(2 * Math.PI * fx * time)) + 1;
+	var y = 0.5 * (h - 2) * (1 + Math.sin(2 * Math.PI * fy * time + phase_rad)) + 1;
+	if(first == true) { ctx.moveTo(x,(h-y)); first = false;}
+	ctx.lineTo(x,(h-y));
+}
+ctx.stroke();
+}
+
+function init()
+{
+document.getElementById('freqx').value = fx.toString(); 
+document.getElementById('freqy').value = fy.toString(); 
+document.getElementById('W').value = w.toString(); 
+document.getElementById('H').value = h.toString(); 
+document.getElementById('NN').value = NOneP.toString(); 
+document.getElementById('ph').value = phase.toString(); 
+setTimeout('initplot()',0);
+}
+
+function initplot()
+{
+var plotwindow = document.getElementById('plot')
+plotwindow.width=w;
+plotwindow.height=h;
+//	generate context
+canvas = document.getElementById('plot');
+ctx = canvas.getContext('2d');
+var data = new Array();
+data[0]=fx;
+data[1]=fy;
+var f = GCD(data);
+//alert(f);
+T = 1/f;
+var fh;
+if(fx>fy) fh = fx; else fh = fy;
+N = NOneP * Math.round(fh / f); //alert(N);
+// clear drawing
+ctx.fillStyle = '#ffffff';
+ctx.fillRect(0, 0, w, h);
+setTimeout('draw()',0);
+}
+
+
+function GCD(nums)
+{
+        if(!nums.length)
+                return 0;
+        for(var r, a, i = nums.length - 1, GCDNum = nums[i]; i;)
+                for(a = nums[--i]; r = a % GCDNum; a = GCDNum, GCDNum = r);
+        return GCDNum;
+}
+
+function go()
+{
+var waarde = parseFloat(document.getElementById('freqx').value);
+if(isNaN(waarde)) { alert('invalid entry for fx:' + waarde); return;}
+if(waarde<0) { alert('invalid value for fx:' + waarde); return;}
+fx = waarde;
+var waarde = parseFloat(document.getElementById('freqy').value);
+if(isNaN(waarde)) { alert('invalid entry for fy:' + waarde); return;}
+if(waarde<0) { alert('invalid value for fy:' + waarde); return;}
+fy = waarde;
+// width & height
+var waarde = parseFloat(document.getElementById('W').value);
+if(isNaN(waarde)) { alert('invalid entry for width:' + waarde); return;}
+if(waarde<0) { alert('invalid value for width:' + waarde +'\n width must be positive'); return;}
+w = waarde;
+var waarde = parseFloat(document.getElementById('H').value);
+if(isNaN(waarde)) { alert('invalid entry for height:' + waarde); return;}
+if(waarde<0) { alert('invalid value for height:' + waarde +'\n height must be positive'); return;}
+h = waarde;
+
+var waarde = parseFloat(document.getElementById('NN').value);
+if(isNaN(waarde)) { alert('invalid entry number of points:' + waarde); return;}
+if(waarde<0) { alert('invalid entry number of points:' + waarde +'\n number must be positive'); return;}
+NOneP = waarde;
+
+var waarde = parseFloat(document.getElementById('ph').value);
+if(isNaN(waarde)) { alert('invalid phase:' + waarde); return;}
+phase = waarde;
+
+initplot();
+}
+
+function demo(n)
+{
+switch(n)
+{
+	case 2:
+		document.getElementById('freqx').value = '500';
+		document.getElementById('freqy').value = '700';
+		document.getElementById('ph').value = '30';
+		go();
+		break;
+	case 3:
+		document.getElementById('freqx').value = '1450';
+		document.getElementById('freqy').value = '1500';
+		document.getElementById('ph').value = '0';
+		go();
+		break;
+}
+}
+</script>
+</head>
+<body id="container" onload="init()">
+<script type="text/javascript">
+if(parent==self) document.writeln('<h3 style="padding-left:20px">Lissajou figures in Javascript</h3>');
+</script>
+<canvas id="plot" name="plot" width="300" height="300"></canvas>
+<br>
+<table>
+<tr>
+	<td colspan="2">Lissajou figures in Javascript<br>
+	according the equations:<br> 
+	<code>x<sub>n</sub> = sin(2 . PI . f<sub>x</sub> . t)</code><br>
+	<code>y<sub>n</sub> = sin(2 . PI . f<sub>y</sub> . t + phase)</code><br>
+fx and fy are the frequencies of the two sinewave signals
+	</td>
+</tr>
+<tr>
+	<td>Frequency X signal: <input type="text" id="freqx"></input></td>
+	<td>Frequency Y signal: <input type="text" id="freqy"></input></td>
+</tr>
+<tr>
+	<td>Width in pixels: <input type="text" id="W"></input></td>
+	<td>Height in pixels: <input type="text" id="H"></input></td>
+</tr>
+<tr>
+	<td colspan="2" >Number of points in 1 period: <input type="text" id="NN"></input></td>	
+</tr>
+<tr>
+	<td colspan="2" >Phase difference in degrees: <input type="text" id="ph"></input></td>	
+</tr>
+<tr>
+	<td colspan="2"><button type="button" onclick="go()">Draw with new settings</button>
+	<button type="button" onclick="demo(2)">demo2</button>
+	<button type="button" onclick="demo(3)">demo3</button></td>
+</tr>
+</table>
+</body>
+</html>

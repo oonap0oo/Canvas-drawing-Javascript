@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Logistic map in Javascript</title>
+<style type="text/css">
+input {width:40px}
+</style>
+<script type="text/javascript">
+var col,num;
+//var log='';
+var w=300;
+var h=300;
+var factor=6;
+var count = [];
+var logistic,bin;
+var x=0;
+var handle;
+var astart=3.5;
+var astop=4;
+var invert=false;
+var canvas, ctx;
+function draw()
+{
+	var a = x / w * (astop - astart) + astart;
+	logistic = .5;
+	for (var index=0; index<h;index++) count[index]=0;
+	for (var index=0; index<1500;index++)
+	{
+		logistic = a*(1 - logistic)*logistic;	
+		bin = Math.round(logistic*h);
+		if(count[bin]<(255-factor)) count[bin]+=factor;	
+		//if (x==295)log += bin + '\t';
+	}	
+	for(var y=0; y<h; y++)
+	{		
+		if (!invert) num = (255-count[y]).toString(16);
+			else num = (count[y]).toString(16);
+		if(num.length < 2) num = '0' + num;
+		col = '#' + num + num + num;				
+		ctx.fillStyle = col;
+		ctx.fillRect(x, (h-y), 1, 1);
+	}
+	if (x<w) x++; else { clearInterval(handle); /*alert(log) */}
+	ctx.stroke();
+}
+
+function init()
+{
+if(navigator.appVersion.match(/MSIE (\d\.\d)/)) return;
+handle = setInterval('draw()',0);
+initplot();
+document.getElementById('astart').value = astart.toString(); 
+document.getElementById('astop').value = astop.toString(); 
+document.getElementById('inv').checked = invert; 
+document.getElementById('factor').value = factor.toString(); 
+document.getElementById('W').value = w.toString(); 
+document.getElementById('H').value = h.toString(); 
+}
+
+function initplot()
+{
+var plotwindow = document.getElementById('plot')
+plotwindow.width=w;
+plotwindow.height=h;
+//	generate context
+canvas = document.getElementById('plot');
+ctx = canvas.getContext('2d');
+}
+
+function go()
+{
+// a values
+var waarde = parseFloat(document.getElementById('astart').value);
+if(isNaN(waarde)) { alert('invalid entry for astart:' + waarde); return;}
+if((waarde>4) || (waarde<0)) { alert('invalid value for astart:' + waarde +'\n astart must be between 0 and 4'); return;}
+astart = waarde;
+var waarde = parseFloat(document.getElementById('astop').value);
+if(isNaN(waarde)) { alert('invalid entry for astart:' + waarde); return;}
+if((waarde>4) || (waarde<0)) { alert('invalid value for astop:' + waarde +'\n astop must be between 0 and 4'); return;}
+astop = waarde;
+// enh factor
+var waarde = parseFloat(document.getElementById('factor').value);
+if(isNaN(waarde)) { alert('invalid entry for factor:' + waarde); return;}
+if((waarde>255) || (waarde<0)) { alert('invalid value for factor:' + waarde +'\n factor must be between 0 and 255'); return;}
+factor = waarde;
+// inverted?
+invert = document.getElementById('inv').checked;
+// width & height
+var waarde = parseFloat(document.getElementById('W').value);
+if(isNaN(waarde)) { alert('invalid entry for width:' + waarde); return;}
+if(waarde<0) { alert('invalid value for width:' + waarde +'\n width must be positive'); return;}
+w = waarde;
+var waarde = parseFloat(document.getElementById('H').value);
+if(isNaN(waarde)) { alert('invalid entry for height:' + waarde); return;}
+if(waarde<0) { alert('invalid value for height:' + waarde +'\n height must be positive'); return;}
+h = waarde;
+setTimeout('initplot()',0);
+// clear drawing
+ctx.fillStyle = '#ffffff';
+ctx.fillRect(0, 0, w, h);
+ctx.stroke();
+// start left again
+x = 0;
+// start cycling
+handle = setInterval('draw()',0);
+}
+</script>
+</head>
+<body id="container" onload="init()">
+<script type="text/javascript">
+if(parent==self) document.writeln('The results and other information are believed to be accurate,	but the author cannot take any responsibility for possible damage caused by mistakes or inaccuracies of the code.<h3 style="padding-left:20px">Logistic map in Javascript</h3>');
+</script>
+<canvas id="plot" name="plot"><br><br><br>This application only works with Browsers which support the canvas tag.<br><br><br><br><br><br><br></canvas>
+<br>
+<table>
+<tr>
+	<td colspan="2">This application draws the logistic map,<br>
+	according the equation:<br> 
+	<code>Y<sub>n</sub> = a . Y<sub>n-1</sub> . (1 - Y<sub>n-1</sub>)</code><br>
+a is a parameter between 0 and 4.
+	</td>
+</tr>
+<tr>
+	<td>Start value of a: <input type="text" id="astart"></input></td>
+	<td>Stop value of a: <input type="text" id="astop"></input></td>
+</tr>
+<tr>
+	<td>Inverted: <input type="checkbox" id="inv"></input></td></td>
+	<td>Enchancing factor: <input type="text" id="factor"></input></td>
+</tr>
+<tr>
+	<td>Width in pixels: <input type="text" id="W"></input></td>
+	<td>Height in pixels: <input type="text" id="H"></input></td>
+</tr>
+<tr>
+	<td><button type="button" onclick="go()">Draw now</button></td>
+</tr>
+</table>
+</body>
+</html>
