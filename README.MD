@@ -21,15 +21,20 @@ according an example program from the TI-83 plus calculator manual. This algorit
 Logistic map in javascript 
 This application draws the logistic map,
 according the equation:
+
 Yn = a . Yn-1 . (1 - Yn-1)
+
 a is a parameter between 0 and 4. 
 
 ### lissa.html
 
 Lissajou figures in Javascript
 according the equations:
+
 xn = sin(2 . PI . fx . t)
+
 yn = sin(2 . PI . fy . t + phase)
+
 fx and fy are the frequencies of the two sinewave signals 
 
 ### index.html
